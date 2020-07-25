@@ -1,0 +1,19 @@
+spring:
+  datasource: #1
+    url: jdbc:mysql://127.0.0.1:3306/mysql?serverTimezone=UTC
+    username: root
+    password: 1111
+    data-username: root
+    data-password: 1111
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa: #2
+    hibernae:
+      ddl-auto: update
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+  servlet:
+    multipart:
+      max-file-size: 20MB
+
+parayo:
+  file-upload:
+    default-dir: C:\Users\samsung\IdeaProjects\Parayo
