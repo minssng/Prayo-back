@@ -2,6 +2,7 @@ package com.example.parayo.domain.product
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 
 @Service
@@ -44,6 +45,8 @@ class ProductService @Autowired constructor(
         val categoryIdIsNotnull: Boolean,
         val direction: String
     )
+
+    fun get(id: Long) = productRepository.findByIdOrNull(id)
 
     // ProductSearchCondition 클래스를 이용해 검색 조건들을 미리 정의.
     companion object {
