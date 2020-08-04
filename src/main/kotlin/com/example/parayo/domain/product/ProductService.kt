@@ -13,6 +13,7 @@ class ProductService @Autowired constructor(
         categoryId: Int?,
         productId: Long,
         direction: String,
+        keyword: String?,
         limit: Int
     ): List<Product> {
         // 각 조건에 맞는 0페이지를 limit 수만큼 가져오기 위한 Pageable을 상속받은 객체.
@@ -22,7 +23,8 @@ class ProductService @Autowired constructor(
         // 때문에 카테고리의 id가 null 인지 여부를 조건을 추가.
         val condition = ProductSearchCondition(
             categoryId != null,
-            direction
+            direction,
+            keyword != null
         )
 
         // 코틀린의 when 절에서는 객체의 비교도 허용하기 때문에 이와 같이 사용할 수가 있음.
@@ -30,6 +32,14 @@ class ProductService @Autowired constructor(
         // 도와줌. when 절에 쓰인 객체는 4번 항목의 객체로 5번의 companion object {} 블록
         // 안에 정의.
         return when(condition) {
+            NEXT_IN_SEARCH -> productRepository
+                .findByIdLessThanAndNameLikeOrderByIdDesc(
+                    productId, "%$keyword%", pageable
+                )
+            PREV_IN_SEARCH -> productRepository
+                .findByIdGreaterThanAndNameLikeOrderByIdDesc(
+                    productId, "%$keyword%", pageable
+                )
             NEXT_IN_CATEGORY -> productRepository
                 .findByCategoryIdAndIdLessThanOrderByIdDesc(
                     categoryId, productId, pageable)
@@ -43,13 +53,16 @@ class ProductService @Autowired constructor(
     // 검색 조건을 표현하기 위한 클래스 정의.
     data class ProductSearchCondition(
         val categoryIdIsNotnull: Boolean,
-        val direction: String
+        val direction: String,
+        val hasKeyword: Boolean = false
     )
 
     fun get(id: Long) = productRepository.findByIdOrNull(id)
 
     // ProductSearchCondition 클래스를 이용해 검색 조건들을 미리 정의.
     companion object {
+        val NEXT_IN_SEARCH = ProductSearchCondition(false, "next", true)
+        val PREV_IN_SEARCH = ProductSearchCondition(false, "rev", true)
         val NEXT_IN_CATEGORY = ProductSearchCondition(true, "next")
         val PREV_IN_CATEGORY = ProductSearchCondition(true, "prev")
     }
