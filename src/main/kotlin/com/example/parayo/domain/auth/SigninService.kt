@@ -23,6 +23,9 @@ class SigninService @Autowired constructor(
             throw ParayoException("로그인 정보를 확인해주세요.")
         }
 
+        user.fcmToken = signinRequest.fcmToken
+        userRepository.save(user)
+
         return responseWithTokens(user)
     }
 

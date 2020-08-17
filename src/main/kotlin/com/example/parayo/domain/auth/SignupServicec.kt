@@ -55,7 +55,7 @@ class SignupService @Autowired constructor( // 2: @Autowired 애노테이션은 
     private fun registerUser(signupRequest: SignupRequest) =
         with(signupRequest) {
             val hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt()) // 문자열을 해싱해주는 기능. 그리고 BCrypt로 해시를 할 때에는 원본 문자열을 찾아내기 힘들도록 임의의 salt라는 값을 붙여 함께 해싱하도록 되어 있음. 이 salt 값은 간단하게 BCrypt.gensalt()를 통해 생성해주면 됨.
-            val user = User(email, hashedPassword, name)
+            val user = User(email, hashedPassword, name, fcmToken)
             userRepository.save(user) // UserRepository가 상속받은 JpaRepository에는 이미 데이터를 저장하는 save() 함수가 구현되어 있음. 여기에 User 객체를 전달하면 데이터베이스에 사용자 정보가 저장됨.
         }
 }
